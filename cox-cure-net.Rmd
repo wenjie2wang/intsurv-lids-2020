@@ -1,0 +1,32 @@
+---
+bibliography: cox-cure-net.bib
+biblio-style: asa
+citation_package: natbib
+output: latex_fragment
+---
+
+We demonstrate the usage of the function `cox_cure_net()`.
+
+Let us first have a brief review on regularized Cox cure rate model.  The cure
+rate models first proposed by @berkson1952jasa are commonly adopted statistical
+methods for survival data with a cure fraction.  A logistic model is widely used
+in modeling the susceptible probability proposed by @farewell1982biometrics.
+@kuk1992biometrika proposed modeling the conditional survival times through a
+Cox proportional hazard model and an model estimation procedure based on EM
+algorithm was later proposed by @sy2000biometrics.
+
+Consider a random sample of $n$ subjects with right-censoring data and a cured
+fraction.  Let $T_j=\min(V_j, C_j)$ and $\Delta_j=I(V_j > C_j)$, where $V_j$ and
+$C_j$ represents the random variable of the failure time and the censoring time
+of subject $j$, respectively, $I(\cdot)$ is indicator function,
+$j \in \{1,\ldots,n\}$.  Define $Z_j = 1$ if subject $j$ is susceptible (not
+cured), and $Z_j = 0$ otherwise (cured), with probability $p_j = \Pr(Z_j = 1)$.
+Notice that $Z_j$ is observed to be 1 if $\Delta_j=1$ and is missing otherwise.
+The observed data likelihood function can be written as
+
+
+
+<!-- do not remove the following lines for reference -->
+\section*{Reference}
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.2em}
