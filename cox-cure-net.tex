@@ -63,12 +63,12 @@ under the observed data from \eqref{eqn:mod} and \begin{align*}
 \end{align*} where \(\omega_k\) and \(\nu_k\) represent non-negative
 weights (Zou 2006), \(0\le\alpha_1\le1\), \(0\le\alpha_2\le1\),
 \(\lambda_1\ge0\), and \(\lambda_2\ge0\) are tuning parameters. The
-coordinate descent (CD) algorithm (Friedman et al. 2007) or local
-quadratic approximations (Fan and Li 2001) may be utilized in the
-M-steps of the EM algorithm to obtain the regularized estimator. Under
-the hood, \VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}| utilizes
-the coordinate-majorization-descent (CMD) algorithm proposed by Yang and
-Zou (2013) in the M-steps due to its descent property.
+coordinate descent algorithm (Friedman et al. 2007) or local quadratic
+approximations (Fan and Li 2001) may be utilized in the M-steps of the
+EM algorithm to obtain the regularized estimator. Under the hood,
+\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}| utilizes the
+coordinate-majorization-descent (CMD) algorithm proposed by Yang and Zou
+(2013) in the M-steps due to its descent property.
 
 To demonstrate the usage of
 \VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}|, we may simulate a
@@ -170,7 +170,7 @@ selection as follows:
 \end{verbatim}
 
 To reduce computational burden, the generalized EM algorithm may be used
-by setting one-step CD update as follows. In this example, we are able
+by setting one-step CMD update as follows. In this example, we are able
 to decrease the computation time by about 80\% and obtain the same
 variable selection results.
 

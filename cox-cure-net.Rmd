@@ -74,7 +74,7 @@ function under the observed data from \eqref{eqn:mod} and
 where $\omega_k$ and $\nu_k$ represent non-negative weights [@zou2006jasa],
 $0\le\alpha_1\le1$, $0\le\alpha_2\le1$, $\lambda_1\ge0$, and $\lambda_2\ge0$
 are tuning parameters.
-The coordinate descent (CD) algorithm [@friedman2007aoas] or local quadratic
+The coordinate descent algorithm [@friedman2007aoas] or local quadratic
 approximations [@fanLi2001jasa] may be utilized in the M-steps of the EM
 algorithm to obtain the regularized estimator.  Under the hood,
 `cox_cure_net.fit()`{.R} utilizes the coordinate-majorization-descent (CMD)
@@ -156,7 +156,7 @@ eval_vs(fit1, beta0, gamma0)
 ```
 
 To reduce computational burden, the generalized EM algorithm may be used by
-setting one-step CD update as follows.  In this example, we are able to decrease
+setting one-step CMD update as follows.  In this example, we are able to decrease
 the computation time by about 80% and obtain the same variable selection
 results.
 
