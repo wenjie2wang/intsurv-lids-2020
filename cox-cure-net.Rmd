@@ -5,28 +5,179 @@ citation_package: natbib
 output: latex_fragment
 ---
 
-We demonstrate the usage of the function `cox_cure_net()`.
+In this column, we demonstrate the usage of the function
+`cox_cure_net.fit()`{.R} provided by \proglang{R} package \pkg{intsurv}
+[@intsurv-package] for fitting regularized Cox cure rate model with elastic-net
+penalty [@zouHastie2005jrssb].
 
-Let us first have a brief review on regularized Cox cure rate model.  The cure
-rate models first proposed by @berkson1952jasa are commonly adopted statistical
-methods for survival data with a cure fraction.  A logistic model is widely used
-in modeling the susceptible probability proposed by @farewell1982biometrics.
-@kuk1992biometrika proposed modeling the conditional survival times through a
-Cox proportional hazard model and an model estimation procedure based on EM
-algorithm was later proposed by @sy2000biometrics.
 
+The cure rate models first proposed by @berkson1952jasa are commonly adopted
+statistical methods for survival data with a cure fraction.
 Consider a random sample of $n$ subjects with right-censoring data and a cured
 fraction.  Let $T_j=\min(V_j, C_j)$ and $\Delta_j=I(V_j > C_j)$, where $V_j$ and
-$C_j$ represents the random variable of the failure time and the censoring time
-of subject $j$, respectively, $I(\cdot)$ is indicator function,
-$j \in \{1,\ldots,n\}$.  Define $Z_j = 1$ if subject $j$ is susceptible (not
-cured), and $Z_j = 0$ otherwise (cured), with probability $p_j = \Pr(Z_j = 1)$.
-Notice that $Z_j$ is observed to be 1 if $\Delta_j=1$ and is missing otherwise.
-The observed data likelihood function can be written as
+$C_j$ represents the random variable of the event time and the censoring time of
+subject $j$, respectively, $I(\cdot)$ is indicator function,
+$j\in\{1,\ldots,n\}$. Define $Z_j = 1$ if subject $j$ is susceptible,
+and $Z_j = 0$ otherwise, with probability $p_j = \Pr(Z_j = 1)$.  Notice
+that $Z_j$ is observed to be 1 if $\Delta_j=1$ and is missing otherwise.
+Proposed by @farewell1982biometrics, a logistic model
+$p_j=1/[1+\exp(-\gamma_0-\bx^{\top}_j\bg)]$ is widely used,
+where $\bx_j$ represents the covariate vector of subject $j$ (excluding
+intercept), $\gamma_0$ is unknown coefficient of intercept and
+$\bg$ is a vector of unknown covariate coefficients.
+Given that $Z_j = 1$, @kuk1992biometrika proposed modeling the conditional
+survival times through a Cox proportional hazard model <!-- [@cox1972jrssb] -->
+with the hazard function
+$$h_j(t\mid Z_j = 1) = h_0(t\mid Z_j = 1) \exp(\bx_j^{\top}\bb),$$
+where $h_0(t\mid Z_j = 1)$ is an unspecified baseline function for
+events, and $\bb$ is a vector of unknown coefficients of the covariate vector
+$\bx_j$.  The conditional survival function of the event time of subject $j$ is
+$$S_j(t\mid Z_j = 1) = \exp\{-H_0(t\mid Z_j = 1) \exp(\bx_j^{\top} \bb) \},$$
+where $H_0(t\mid Z_j = 1) = \int_0^t h_0(s\mid Z_j = 1) \dif s$.  Given that
+subject $j$ is cured ($Z_j = 0$), the conditional survival function satisfies
+$S_j(t\mid Z_j=0) = 1$, for $t<+\infty$.  The observed data likelihood function
+can be written as
+\begin{align}\label{eqn:mod}
+L(\bm{\theta}) = \prod_{j=1}^n
+& \left\{ p_j h_j(t_j\mid Z_j=1) S_j(t_j\mid Z_j=1) \right\}^{\delta_j}\nonumber\\
+& \left\{(1 - p_j) + p_j S_j(t_j \mid Z_j = 1)\right\}^{1-\delta_j},
+\end{align}
+where $\bm{\theta}=\{\bb,\bg,\gamma_0,h_0(\cdot)\}$.
+A model estimation procedure based on the well-known EM
+algorithm <!-- [@dempster1977jrssb] --> was proposed by @sy2000biometrics.
+Recently, a few works have been proposed to perform variable selection for cure
+models.  For example, @scolas2016sim proposed variable selection with adaptive
+lasso penalty [@zou2006jasa] for interval-censored data in a parametric cure
+model, where conditional survival times follow the extended generalized gamma
+distribution.  @masud2018smimr proposed variable selection methods for mixture
+cure model and promotion cure model through regularization by the adaptive lasso
+penalty.  @fan2017smmr and @shi2019smmr promoted structural similarity and sign
+consistency of $\hat{\bg}$ and $\hat{\bb}$, respectively, with minimax concave
+penalty [@zhang2010aos] for variable selection.
+Here, we concentrate on the following regularized estimator
+with elastic-net penalty,
+\begin{align}
+  \hat{\bm{\theta}} = \arg\min_{\bm{\theta}} -\frac{1}{n}
+  \ell(\bm{\theta})
+  + P_{1}(\bb; \alpha_1, \lambda_1) + P_{2}(\bg; \alpha_2, \lambda_2),
+\end{align}
+where $\ell(\bm{\theta})$ is the log-likelihood
+function under the observed data from \eqref{eqn:mod} and
+\begin{align*}
+  P_{1}(\bb; \alpha_1, \lambda_1)
+  & = \lambda_1 \left( \alpha_1 \sum_{k=1}^{p} \omega_k \lvert \beta_k \rvert +
+  \frac{1 - \alpha_1}{2} \sum_{k=1}^{p} \beta_k^2\right),\\
+  P_{2}(\bg; \alpha_2, \lambda_2)
+  & = \lambda_2 \left( \alpha_2 \sum_{k=1}^{p} \nu_k \lvert \gamma_k \rvert +
+  \frac{1 - \alpha_2}{2} \sum_{k=1}^{p} \gamma_k^2 \right),
+\end{align*}
+where $\omega_k$ and $\nu_k$ represent non-negative weights [@zou2006jasa],
+$0\le\alpha_1\le1$, $0\le\alpha_2\le1$, $\lambda_1\ge0$, and $\lambda_2\ge0$
+are tuning parameters.
+The coordinate descent (CD) algorithm [@friedman2007aoas] or local quadratic
+approximations [@fanLi2001jasa] may be utilized in the M-steps of the EM
+algorithm to obtain the regularized estimator.  Under the hood,
+`cox_cure_net.fit()`{.R} utilizes the coordinate-majorization-descent (CMD)
+algorithm proposed by @yang2013sii in the M-steps due to its descent property.
 
+
+To demonstrate the usage of `cox_cure_net.fit()`{.R}, we may simulate a dataset
+of sample size 200 as follows. 100 covariates are simulated from multivariate
+normal distribution with means zero and variances one.  The correlation between
+$x_k$ and $x_l$, $k\neq l$, was set to be $\rho^{\lvert k - l \rvert}$, where
+$\rho = 0.5$.  For each model part, only five covariates actually have non-zero
+coefficients.  The true non-zero coefficients are simulated from
+$\mathrm{Unif}(0.6, 1)$ independently.  For susceptible subjects, the event
+times were generated from Weibull-Cox model with baseline hazard function
+$h_0(t; \bx) = 0.2t\exp(\bx^{\top}\bb)$.  For cured subjects, the event times
+were set to be infinity.  The censoring times were generated independently with
+the event times from exponential distribution with rate 0.01 and truncated at
+10.  The generation of event times and censoring times takes advantage of
+function `intsurv::simData4cure()`{.R}.
+
+```{r simu-data, echo = TRUE, cached = TRUE}
+library(intsurv)
+set.seed(123)
+p <- 100; n <- 200; rho <- 0.5
+beta0 <- gamma0 <- rep(0, p)
+beta0[c(1, 2, 4, 6, 8)] <- runif(5, 0.6, 1)
+gamma0[c(1, 3, 5, 7, 9)] <- runif(5, 0.6, 1)
+ij_mat <- expand.grid(i = seq_len(p), j = seq_len(p))
+Sigma <- matrix(mapply(function(i, j) {
+    rho^abs(i - j)
+}, ij_mat$i, ij_mat$j), nrow = p)
+x_mat <- MASS::mvrnorm(n, mu = rep(0, p), Sigma)
+colnames(x_mat) <- paste0("x", seq_len(p))
+dat <- simData4cure(
+    n, survMat = x_mat, survCoef = beta0,
+    cureCoef = gamma0, b0 = 1, lambda_censor = 0.01,
+    max_censor = 10, p1 = 1, p2 = 1, p3 = 1
+)
+```
+
+Similar to function `glmnet::glmnet()`{.R} for regularized generalized linear
+models, `cox_cure_net.fit()` fits the regularized Cox cure rate model over a
+specified grid of tuning parameter $\lambda_1$ and $\lambda_2$ with fixed
+$\alpha_1$ and $\alpha_2$.  Instead, the desired length of each $\lambda$
+sequence can be specified and an equally-spaced (in logarithm scale) sequence
+will be generated from the smallest "large enough" $\lambda_{\max}$ that result
+in all zero coefficient estimates to a specified "small enough"
+$\lambda_{\min}$.  By default, $\lambda_{\min}=0.1\lambda_{\max}$ is set for
+both model parts in `cox_cure_net.fit()`{.R}.  Here we set $\alpha_1 = \alpha_2
+= 0.5$ and specify a 10 by 10 grid for $\lambda_1$ and $\lambda_2$.
+
+
+```{r vs-fit1, cache = TRUE}
+system.time({
+    fit1 <- cox_cure_net.fit(
+        surv_x = x_mat, cure_x = x_mat,
+        time = dat$obs_time, event = dat$obs_event,
+        surv_nlambda = 10, cure_nlambda = 10,
+        surv_alpha = 0.5, cure_alpha = 0.5
+    )
+})
+```
+
+The tuning parameters may be selected based on BIC and a `coef()`{.R} method for
+`cox_cure_net`{.R} objects can be used to return the coefficient estimates from
+the selected model.  We may quickly check the true positive rate and false
+positive rate in terms of variable selection as follows:
+
+```{r vs-fun, cache = TRUE}
+eval_vs <- function(x, beta0, gamma0) {
+    foo <- function(b, b0) {
+        c("% True Positive" = mean(b[b0 != 0] != 0),
+          "% False Positive" = mean(b[b0 == 0] != 0))
+    }
+    rbind(beta = foo(coef(fit1)$surv, beta0),
+          gamma = foo(coef(fit1)$cure, gamma0))
+}
+eval_vs(fit1, beta0, gamma0)
+```
+
+To reduce computational burden, the generalized EM algorithm may be used by
+setting one-step CD update as follows.  In this example, we are able to decrease
+the computation time by 80% and obtain the same variable selection results.
+
+```{r vs-fit2, cache = TRUE}
+system.time({
+    fit2 <- cox_cure_net.fit(
+        surv_x = x_mat, cure_x = x_mat,
+        time = dat$obs_time, event = dat$obs_event,
+        surv_nlambda = 10, cure_nlambda = 10,
+        surv_alpha = 0.5, cure_alpha = 0.5,
+        surv_max_iter = 1, cure_max_iter = 1
+    )
+})
+eval_vs(fit2, beta0, gamma0)
+```
+
+After variable selection, a regular Cox cure rate model may be fitted by
+`intsurv::cox_cure()`.  See <https://wenjie-stat.me/intsurv/> for full package
+documents.
 
 
 <!-- do not remove the following lines for reference -->
 \section*{Reference}
 \setlength{\parindent}{0em}
-\setlength{\parskip}{0.2em}
+\setlength{\parskip}{0.15em}
