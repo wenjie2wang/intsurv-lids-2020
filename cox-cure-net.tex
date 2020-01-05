@@ -1,7 +1,11 @@
-In this column, we demonstrate the usage of the function
-\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}| provided by
-\proglang{R} package \pkg{intsurv} (Wang 2019) for fitting regularized
-Cox cure rate model with elastic-net penalty (Zou and Hastie 2005).
+Regularized Cox models with a cure rate are a important tool for
+analyzing survival data with heaving censoring and a large number of
+covaraites. The \proglang{R} Package \pkg{intsurv} (Wang 2019) provides
+a collection of methods for integrative survival analyses with data from
+multiple sources. Among others, one function
+\VERB|\KeywordTok{cox_cure_net.fit}\NormalTok{()}| in the package is an
+efficient implementation for regularized Cox cure rate model with
+elastic-net penalty (Zou and Hastie 2005).
 
 The cure rate models first proposed by Berkson and Gage (1952) are
 commonly adopted statistical methods for survival data with a cure
@@ -35,8 +39,9 @@ observed data likelihood function can be written as
 L(\bm{\theta}) = \prod_{j=1}^n
 & \left\{ p_j h_j(t_j\mid Z_j=1) S_j(t_j\mid Z_j=1) \right\}^{\delta_j}\nonumber\\
 & \left\{(1 - p_j) + p_j S_j(t_j \mid Z_j = 1)\right\}^{1-\delta_j},
-\end{align} where \(\bm{\theta}=\{\bb,\bg,\gamma_0,h_0(\cdot)\}\). A
-model estimation procedure based on the well-known EM algorithm was
+\end{align} where \(\bm{\theta}=\{\bb,\bg,\gamma_0,h_0(\cdot)\}\).
+
+An estimation procedure based on the well-known EM algorithm was
 proposed by Sy and Taylor (2000). Recently, a few works have been
 proposed to perform variable selection for cure models. For example,
 Scolas et al. (2016) proposed variable selection with adaptive lasso
@@ -66,12 +71,12 @@ weights (Zou 2006), \(0\le\alpha_1\le1\), \(0\le\alpha_2\le1\),
 coordinate descent algorithm (Friedman et al. 2007) or local quadratic
 approximations (Fan and Li 2001) may be utilized in the M-steps of the
 EM algorithm to obtain the regularized estimator. Under the hood,
-\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}| utilizes the
+\VERB|\KeywordTok{cox_cure_net.fit}\NormalTok{()}| utilizes the
 coordinate-majorization-descent (CMD) algorithm proposed by Yang and Zou
 (2013) in the M-steps due to its descent property.
 
 To demonstrate the usage of
-\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}|, we may simulate a
+\VERB|\KeywordTok{cox_cure_net.fit}\NormalTok{()}|, we may simulate a
 dataset of sample size 200 as follows. 100 covariates are simulated from
 multivariate normal distribution with means zero and variances one. The
 correlation between \(x_k\) and \(x_l\), \(k\neq l\), was set to be
@@ -91,20 +96,20 @@ censoring times takes advantage of function
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(intsurv)}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-\NormalTok{p <{-}}\StringTok{ }\DecValTok{100}\NormalTok{; n <{-}}\StringTok{ }\DecValTok{200}\NormalTok{; rho <{-}}\StringTok{ }\FloatTok{0.5}
-\NormalTok{beta0 <{-}}\StringTok{ }\NormalTok{gamma0 <{-}}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, p)}
-\NormalTok{beta0[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{)] <{-}}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{5}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\NormalTok{gamma0[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{9}\NormalTok{)] <{-}}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{5}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\NormalTok{ij\_mat <{-}}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{i =} \KeywordTok{seq\_len}\NormalTok{(p), }\DataTypeTok{j =} \KeywordTok{seq\_len}\NormalTok{(p))}
-\NormalTok{Sigma <{-}}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{mapply}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(i, j) \{}
-\NormalTok{    rho}\OperatorTok{\^{}}\KeywordTok{abs}\NormalTok{(i }\OperatorTok{{-}}\StringTok{ }\NormalTok{j)}
-\NormalTok{\}, ij\_mat}\OperatorTok{$}\NormalTok{i, ij\_mat}\OperatorTok{$}\NormalTok{j), }\DataTypeTok{nrow =}\NormalTok{ p)}
-\NormalTok{x\_mat <{-}}\StringTok{ }\NormalTok{MASS}\OperatorTok{::}\KeywordTok{mvrnorm}\NormalTok{(n, }\DataTypeTok{mu =} \KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, p), Sigma)}
-\KeywordTok{colnames}\NormalTok{(x\_mat) <{-}}\StringTok{ }\KeywordTok{paste0}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\KeywordTok{seq\_len}\NormalTok{(p))}
-\NormalTok{dat <{-}}\StringTok{ }\KeywordTok{simData4cure}\NormalTok{(}
-\NormalTok{    n, }\DataTypeTok{survMat =}\NormalTok{ x\_mat, }\DataTypeTok{survCoef =}\NormalTok{ beta0,}
-    \DataTypeTok{cureCoef =}\NormalTok{ gamma0, }\DataTypeTok{b0 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{lambda\_censor =} \FloatTok{0.01}\NormalTok{,}
-    \DataTypeTok{max\_censor =} \DecValTok{10}\NormalTok{, }\DataTypeTok{p1 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{p2 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{p3 =} \DecValTok{1}
+\NormalTok{p <-}\StringTok{ }\DecValTok{100}\NormalTok{; n <-}\StringTok{ }\DecValTok{200}\NormalTok{; rho <-}\StringTok{ }\FloatTok{0.5}
+\NormalTok{beta0 <-}\StringTok{ }\NormalTok{gamma0 <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, p)}
+\NormalTok{beta0[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{)] <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{5}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{gamma0[}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{9}\NormalTok{)] <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{5}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\NormalTok{ij_mat <-}\StringTok{ }\KeywordTok{expand.grid}\NormalTok{(}\DataTypeTok{i =} \KeywordTok{seq_len}\NormalTok{(p), }\DataTypeTok{j =} \KeywordTok{seq_len}\NormalTok{(p))}
+\NormalTok{Sigma <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{mapply}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(i, j) \{}
+\NormalTok{    rho}\OperatorTok{^}\KeywordTok{abs}\NormalTok{(i }\OperatorTok{-}\StringTok{ }\NormalTok{j)}
+\NormalTok{\}, ij_mat}\OperatorTok{$}\NormalTok{i, ij_mat}\OperatorTok{$}\NormalTok{j), }\DataTypeTok{nrow =}\NormalTok{ p)}
+\NormalTok{x_mat <-}\StringTok{ }\NormalTok{MASS}\OperatorTok{::}\KeywordTok{mvrnorm}\NormalTok{(n, }\DataTypeTok{mu =} \KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, p), Sigma)}
+\KeywordTok{colnames}\NormalTok{(x_mat) <-}\StringTok{ }\KeywordTok{paste0}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\KeywordTok{seq_len}\NormalTok{(p))}
+\NormalTok{dat <-}\StringTok{ }\KeywordTok{simData4cure}\NormalTok{(}
+\NormalTok{    n, }\DataTypeTok{survMat =}\NormalTok{ x_mat, }\DataTypeTok{survCoef =}\NormalTok{ beta0,}
+    \DataTypeTok{cureCoef =}\NormalTok{ gamma0, }\DataTypeTok{b0 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{lambda_censor =} \FloatTok{0.01}\NormalTok{,}
+    \DataTypeTok{max_censor =} \DecValTok{10}\NormalTok{, }\DataTypeTok{p1 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{p2 =} \DecValTok{1}\NormalTok{, }\DataTypeTok{p3 =} \DecValTok{1}
 \NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -120,18 +125,18 @@ will be generated from the smallest ``large enough'' \(\lambda_{\max}\)
 that result in all zero coefficient estimates to a specified ``small
 enough'' \(\lambda_{\min}\). By default,
 \(\lambda_{\min}=0.1\lambda_{\max}\) is set for both model parts in
-\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}|. Here we set
+\VERB|\KeywordTok{cox_cure_net.fit}\NormalTok{()}|. Here we set
 \(\alpha_1 = \alpha_2 = 0.5\) and specify a 10 by 10 grid for
 \(\lambda_1\) and \(\lambda_2\).
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{system.time}\NormalTok{(\{}
-\NormalTok{    fit1 <{-}}\StringTok{ }\KeywordTok{cox\_cure\_net.fit}\NormalTok{(}
-        \DataTypeTok{surv\_x =}\NormalTok{ x\_mat, }\DataTypeTok{cure\_x =}\NormalTok{ x\_mat,}
-        \DataTypeTok{time =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs\_time, }\DataTypeTok{event =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs\_event,}
-        \DataTypeTok{surv\_nlambda =} \DecValTok{10}\NormalTok{, }\DataTypeTok{cure\_nlambda =} \DecValTok{10}\NormalTok{,}
-        \DataTypeTok{surv\_alpha =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{cure\_alpha =} \FloatTok{0.5}
+\NormalTok{    fit1 <-}\StringTok{ }\KeywordTok{cox_cure_net.fit}\NormalTok{(}
+        \DataTypeTok{surv_x =}\NormalTok{ x_mat, }\DataTypeTok{cure_x =}\NormalTok{ x_mat,}
+        \DataTypeTok{time =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs_time, }\DataTypeTok{event =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs_event,}
+        \DataTypeTok{surv_nlambda =} \DecValTok{10}\NormalTok{, }\DataTypeTok{cure_nlambda =} \DecValTok{10}\NormalTok{,}
+        \DataTypeTok{surv_alpha =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{cure_alpha =} \FloatTok{0.5}
 \NormalTok{    )}
 \NormalTok{\})}
 \end{Highlighting}
@@ -139,34 +144,34 @@ enough'' \(\lambda_{\min}\). By default,
 
 \begin{verbatim}
 ##    user  system elapsed 
-##  89.321   0.704  11.320
+##   7.946   0.029   8.026
 \end{verbatim}
 
 The tuning parameters may be selected based on BIC and a
 \VERB|\KeywordTok{coef}\NormalTok{()}| method for
-\VERB|\NormalTok{cox\_cure\_net}| objects can be used to return the
+\VERB|\NormalTok{cox_cure_net}| objects can be used to return the
 coefficient estimates from the selected model. We may quickly check the
 true positive rate and false positive rate in terms of variable
 selection as follows:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{eval\_vs <{-}}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x, beta0, gamma0) \{}
-\NormalTok{    foo <{-}}\StringTok{ }\ControlFlowTok{function}\NormalTok{(b, b0) \{}
-        \KeywordTok{c}\NormalTok{(}\StringTok{"\% True Positive"}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(b[b0 }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{),}
-          \StringTok{"\% False Positive"}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(b[b0 }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{))}
+\NormalTok{eval_vs <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x, beta0, gamma0) \{}
+\NormalTok{    foo <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(b, b0) \{}
+        \KeywordTok{c}\NormalTok{(}\StringTok{"% True Positive"}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(b[b0 }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{),}
+          \StringTok{"% False Positive"}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(b[b0 }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{))}
 \NormalTok{    \}}
     \KeywordTok{rbind}\NormalTok{(}\DataTypeTok{beta =} \KeywordTok{foo}\NormalTok{(}\KeywordTok{coef}\NormalTok{(fit1)}\OperatorTok{$}\NormalTok{surv, beta0),}
           \DataTypeTok{gamma =} \KeywordTok{foo}\NormalTok{(}\KeywordTok{coef}\NormalTok{(fit1)}\OperatorTok{$}\NormalTok{cure, gamma0))}
 \NormalTok{\}}
-\KeywordTok{eval\_vs}\NormalTok{(fit1, beta0, gamma0)}
+\KeywordTok{eval_vs}\NormalTok{(fit1, beta0, gamma0)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##       % True Positive % False Positive
-## beta        1.0000000       0.09473684
-## gamma       0.8333333       0.07368421
+## beta        1.0000000       0.01052632
+## gamma       0.6666667       0.06315789
 \end{verbatim}
 
 To reduce computational burden, the generalized EM algorithm may be used
@@ -177,12 +182,12 @@ variable selection results.
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{system.time}\NormalTok{(\{}
-\NormalTok{    fit2 <{-}}\StringTok{ }\KeywordTok{cox\_cure\_net.fit}\NormalTok{(}
-        \DataTypeTok{surv\_x =}\NormalTok{ x\_mat, }\DataTypeTok{cure\_x =}\NormalTok{ x\_mat,}
-        \DataTypeTok{time =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs\_time, }\DataTypeTok{event =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs\_event,}
-        \DataTypeTok{surv\_nlambda =} \DecValTok{10}\NormalTok{, }\DataTypeTok{cure\_nlambda =} \DecValTok{10}\NormalTok{,}
-        \DataTypeTok{surv\_alpha =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{cure\_alpha =} \FloatTok{0.5}\NormalTok{,}
-        \DataTypeTok{surv\_max\_iter =} \DecValTok{1}\NormalTok{, }\DataTypeTok{cure\_max\_iter =} \DecValTok{1}
+\NormalTok{    fit2 <-}\StringTok{ }\KeywordTok{cox_cure_net.fit}\NormalTok{(}
+        \DataTypeTok{surv_x =}\NormalTok{ x_mat, }\DataTypeTok{cure_x =}\NormalTok{ x_mat,}
+        \DataTypeTok{time =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs_time, }\DataTypeTok{event =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{obs_event,}
+        \DataTypeTok{surv_nlambda =} \DecValTok{10}\NormalTok{, }\DataTypeTok{cure_nlambda =} \DecValTok{10}\NormalTok{,}
+        \DataTypeTok{surv_alpha =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{cure_alpha =} \FloatTok{0.5}\NormalTok{,}
+        \DataTypeTok{surv_max_iter =} \DecValTok{1}\NormalTok{, }\DataTypeTok{cure_max_iter =} \DecValTok{1}
 \NormalTok{    )}
 \NormalTok{\})}
 \end{Highlighting}
@@ -190,19 +195,19 @@ variable selection results.
 
 \begin{verbatim}
 ##    user  system elapsed 
-##  18.064   0.135   2.294
+##   3.447   0.008   3.466
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{eval\_vs}\NormalTok{(fit2, beta0, gamma0)}
+\KeywordTok{eval_vs}\NormalTok{(fit2, beta0, gamma0)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##       % True Positive % False Positive
-## beta        1.0000000       0.09473684
-## gamma       0.8333333       0.07368421
+## beta        1.0000000       0.01052632
+## gamma       0.6666667       0.06315789
 \end{verbatim}
 
 After variable selection, a regular Cox cure rate model may be fitted by

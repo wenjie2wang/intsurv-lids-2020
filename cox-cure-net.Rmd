@@ -5,10 +5,13 @@ citation_package: natbib
 output: latex_fragment
 ---
 
-In this column, we demonstrate the usage of the function
-`cox_cure_net.fit()`{.R} provided by \proglang{R} package \pkg{intsurv}
-[@intsurv-package] for fitting regularized Cox cure rate model with elastic-net
-penalty [@zouHastie2005jrssb].
+Regularized Cox models with a cure rate are a important tool for analyzing
+survival data with heaving censoring and a large number of covaraites.
+The \proglang{R} Package \pkg{intsurv} [@intsurv-package] provides a
+collection of methods for integrative survival analyses with data from
+multiple sources. Function `cox_cure_net.fit()`{.R} in the package
+is an efficient implementation for regularized Cox cure rate model
+with elastic-net penalty [@zouHastie2005jrssb].
 
 
 The cure rate models first proposed by @berkson1952jasa are commonly adopted
@@ -43,7 +46,9 @@ L(\bm{\theta}) = \prod_{j=1}^n
 & \left\{(1 - p_j) + p_j S_j(t_j \mid Z_j = 1)\right\}^{1-\delta_j},
 \end{align}
 where $\bm{\theta}=\{\bb,\bg,\gamma_0,h_0(\cdot)\}$.
-A model estimation procedure based on the well-known EM
+
+
+An estimation procedure based on the well-known EM
 algorithm <!-- [@dempster1977jrssb] --> was proposed by @sy2000biometrics.
 Recently, a few works have been proposed to perform variable selection for cure
 models.  For example, @scolas2016sim proposed variable selection with adaptive
