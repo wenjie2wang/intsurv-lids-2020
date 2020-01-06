@@ -19,3 +19,7 @@ clean:
 	.Rhistory *.aux *.bbl *.blg *.dvi *.out *.log \
 	*.toc *.fff *.fdb_latexmk *.fls *.ttt *diff* *oldtmp* \
 	.blb *.synctex.gz
+
+cleanCache:
+	@$(RM) -rf $(patsubst %.Rmd,%_cache,$(Rmd_src)) \
+		$(patsubst %.Rmd,%_files,$(Rmd_src))
