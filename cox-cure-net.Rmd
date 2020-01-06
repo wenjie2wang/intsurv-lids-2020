@@ -1,20 +1,17 @@
 ---
-bibliography: cox-cure-net.bib
-biblio-style: asa
-citation_package: natbib
 output: latex_fragment
 ---
 
 Regularized Cox models with a cure rate are a important tool for analyzing
 survival data with heaving censoring and a large number of covaraites.
-The \proglang{R} Package \pkg{intsurv} [@intsurv-package] provides a
+The \proglang{R} Package \pkg{intsurv} \citep{intsurv-package} provides a
 collection of methods for integrative survival analyses with data from
 multiple sources. Function `cox_cure_net.fit()`{.R} in the package
 is an efficient implementation for regularized Cox cure rate model
-with elastic-net penalty [@zouHastie2005jrssb].
+with elastic-net penalty \citep{zouHastie2005jrssb}.
 
 
-The cure rate models first proposed by @berkson1952jasa are commonly adopted
+The cure rate models first proposed by \citet{berkson1952jasa} are commonly adopted
 statistical methods for survival data with a cure fraction.
 Consider a random sample of $n$ subjects with right-censoring data and a cured
 fraction.  Let $T_j=\min(V_j, C_j)$ and $\Delta_j=I(V_j > C_j)$, where $V_j$ and
@@ -23,13 +20,13 @@ subject $j$, respectively, $I(\cdot)$ is indicator function,
 $j\in\{1,\ldots,n\}$. Define $Z_j = 1$ if subject $j$ is susceptible,
 and $Z_j = 0$ otherwise, with probability $p_j = \Pr(Z_j = 1)$.  Notice
 that $Z_j$ is observed to be 1 if $\Delta_j=1$ and is missing otherwise.
-Proposed by @farewell1982biometrics, a logistic model
+Proposed by \citet{farewell1982biometrics}, a logistic model
 $p_j=1/[1+\exp(-\gamma_0-\bx^{\top}_j\bg)]$ is widely used,
 where $\bx_j$ represents the covariate vector of subject $j$ (excluding
 intercept), $\gamma_0$ is unknown coefficient of intercept and
 $\bg$ is a vector of unknown covariate coefficients.
-Given that $Z_j = 1$, @kuk1992biometrika proposed modeling the conditional
-survival times through a Cox proportional hazard model <!-- [@cox1972jrssb] -->
+Given that $Z_j = 1$, \citet{kuk1992biometrika} proposed modeling the conditional
+survival times through a Cox proportional hazard model <!-- \citep{cox1972jrssb} -->
 with the hazard function
 $$h_j(t\mid Z_j = 1) = h_0(t\mid Z_j = 1) \exp(\bx_j^{\top}\bb),$$
 where $h_0(t\mid Z_j = 1)$ is an unspecified baseline function for
@@ -49,16 +46,16 @@ where $\bm{\theta}=\{\bb,\bg,\gamma_0,h_0(\cdot)\}$.
 
 
 An estimation procedure based on the well-known EM
-algorithm <!-- [@dempster1977jrssb] --> was proposed by @sy2000biometrics.
+algorithm <!-- \citep{dempster1977jrssb} --> was proposed by \citet{sy2000biometrics}.
 Recently, a few works have been proposed to perform variable selection for cure
-models.  For example, @scolas2016sim proposed variable selection with adaptive
-lasso penalty [@zou2006jasa] for interval-censored data in a parametric cure
+models.  For example, \citet{scolas2016sim} proposed variable selection with adaptive
+lasso penalty \citep{zou2006jasa} for interval-censored data in a parametric cure
 model, where conditional survival times follow the extended generalized gamma
-distribution.  @masud2018smimr proposed variable selection methods for mixture
+distribution.  \citet{masud2018smimr} proposed variable selection methods for mixture
 cure model and promotion cure model through regularization by the adaptive lasso
-penalty.  @fan2017smmr and @shi2019smmr promoted structural similarity and sign
+penalty.  \citet{fan2017smmr} and \citet{shi2019smmr} promoted structural similarity and sign
 consistency of $\hat{\bg}$ and $\hat{\bb}$, respectively, with minimax concave
-penalty [@zhang2010aos] for variable selection.
+penalty \citep{zhang2010aos} for variable selection.
 Here, we concentrate on the following regularized estimator
 with elastic-net penalty,
 \begin{align}
@@ -76,14 +73,14 @@ function under the observed data from \eqref{eqn:mod} and
   & = \lambda_2 \left( \alpha_2 \sum_{k=1}^{p} \nu_k \lvert \gamma_k \rvert +
   \frac{1 - \alpha_2}{2} \sum_{k=1}^{p} \gamma_k^2 \right),
 \end{align*}
-where $\omega_k$ and $\nu_k$ represent non-negative weights [@zou2006jasa],
+where $\omega_k$ and $\nu_k$ represent non-negative weights \citep{zou2006jasa},
 $0\le\alpha_1\le1$, $0\le\alpha_2\le1$, $\lambda_1\ge0$, and $\lambda_2\ge0$
 are tuning parameters.
-The coordinate descent algorithm [@friedman2007aoas] or local quadratic
-approximations [@fanLi2001jasa] may be utilized in the M-steps of the EM
+The coordinate descent algorithm \citep{friedman2007aoas} or local quadratic
+approximations \citep{fanLi2001jasa} may be utilized in the M-steps of the EM
 algorithm to obtain the regularized estimator.  Under the hood,
 `cox_cure_net.fit()`{.R} utilizes the coordinate-majorization-descent (CMD)
-algorithm proposed by @yang2013sii in the M-steps due to its descent property.
+algorithm proposed by \citet{yang2013sii} in the M-steps due to its descent property.
 
 
 To demonstrate the usage of `cox_cure_net.fit()`{.R}, we may simulate a dataset
@@ -161,9 +158,9 @@ eval_vs(fit1, beta0, gamma0)
 ```
 
 To reduce computational burden, the generalized EM algorithm may be used by
-setting one-step CMD update as follows.  In this example, we are able to decrease
-the computation time by about 80% and obtain the same variable selection
-results.
+setting one-step CMD update as follows.  In this example, we are able to
+substantially decrease the computation time and obtain the same variable
+selection results.
 
 ```{r vs-fit2, cache = TRUE}
 system.time({
@@ -183,7 +180,3 @@ After variable selection, a regular Cox cure rate model may be fitted by
 documents.
 
 
-<!-- do not remove the following lines for reference -->
-\section*{Reference}
-\setlength{\parindent}{0em}
-\setlength{\parskip}{0.15em}
