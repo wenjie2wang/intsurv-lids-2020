@@ -2,7 +2,7 @@
 output: latex_fragment
 ---
 
-Regularized Cox models with a cure rate are a important tool for analyzing
+Regularized Cox models with a cure rate are an important tool for analyzing
 survival data with heaving censoring and a large number of covaraites.
 The \proglang{R} Package \pkg{intsurv} \citep{intsurv-package} provides a
 collection of methods for integrative survival analyses with data from
