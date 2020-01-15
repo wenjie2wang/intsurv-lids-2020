@@ -117,13 +117,14 @@ censoring times takes advantage of function
 
 Similar to function
 \VERB|\NormalTok{glmnet}\OperatorTok{::}\KeywordTok{glmnet}\NormalTok{()}|
-for regularized generalized linear models, \texttt{cox\_cure\_net.fit()}
-fits the regularized Cox cure rate model over a specified grid of tuning
+for regularized generalized linear models,
+\VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}| fits the
+regularized Cox cure rate model over a specified grid of tuning
 parameter \(\lambda_1\) and \(\lambda_2\) with fixed \(\alpha_1\) and
 \(\alpha_2\). Instead, the desired length of each \(\lambda\) sequence
 can be specified and an equally-spaced (in logarithm scale) sequence
 will be generated from the smallest ``large enough'' \(\lambda_{\max}\)
-that result in all zero coefficient estimates to a specified ``small
+that results in all zero coefficient estimates to a specified ``small
 enough'' \(\lambda_{\min}\). By default,
 \(\lambda_{\min}=0.1\lambda_{\max}\) is set for both model parts in
 \VERB|\KeywordTok{cox\_cure\_net.fit}\NormalTok{()}|. Here we set
@@ -212,5 +213,6 @@ variable selection results.
 \end{verbatim}
 
 After variable selection, a regular Cox cure rate model may be fitted by
-\texttt{intsurv::cox\_cure()}. See \url{https://wenjie-stat.me/intsurv/}
-for full package documents.
+\VERB|\NormalTok{intsurv}\OperatorTok{::}\KeywordTok{cox\_cure}\NormalTok{()}|.
+See \url{https://wenjie-stat.me/intsurv/} for the full package
+documents.

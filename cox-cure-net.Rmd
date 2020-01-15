@@ -118,11 +118,11 @@ dat <- simData4cure(
 ```
 
 Similar to function `glmnet::glmnet()`{.R} for regularized generalized linear
-models, `cox_cure_net.fit()` fits the regularized Cox cure rate model over a
+models, `cox_cure_net.fit()`{.R} fits the regularized Cox cure rate model over a
 specified grid of tuning parameter $\lambda_1$ and $\lambda_2$ with fixed
 $\alpha_1$ and $\alpha_2$.  Instead, the desired length of each $\lambda$
 sequence can be specified and an equally-spaced (in logarithm scale) sequence
-will be generated from the smallest "large enough" $\lambda_{\max}$ that result
+will be generated from the smallest "large enough" $\lambda_{\max}$ that results
 in all zero coefficient estimates to a specified "small enough"
 $\lambda_{\min}$.  By default, $\lambda_{\min}=0.1\lambda_{\max}$ is set for
 both model parts in `cox_cure_net.fit()`{.R}.  Here we set $\alpha_1 = \alpha_2
@@ -176,7 +176,7 @@ eval_vs(fit2, beta0, gamma0)
 ```
 
 After variable selection, a regular Cox cure rate model may be fitted by
-`intsurv::cox_cure()`.  See <https://wenjie-stat.me/intsurv/> for full package
-documents.
+`intsurv::cox_cure()`{.R}.  See <https://wenjie-stat.me/intsurv/> for the full
+package documents.
 
 
